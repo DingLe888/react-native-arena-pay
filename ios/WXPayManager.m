@@ -51,18 +51,12 @@ static WXPayManager *instance = nil;
     
     self.success = success;
     self.faild = faild;
+    self.data = data;
     
-    if((NSDictionary *)[data objectForKey:@"payInfo"]){
-        NSDictionary *dataDic = (NSDictionary *)[data objectForKey:@"payInfo"];
-        self.data = dataDic;
-    }else{
-        self.faild(@"缺少参数", @"缺少参数", nil);
-    }
-    
-    if ([WXApi isWXAppInstalled] == NO){
-        self.faild(@"未安装微信", @"未安装微信", nil);
-        return;
-    }
+//    if ([WXApi isWXAppInstalled] == NO){
+//        self.faild(@"未安装微信", @"未安装微信", nil);
+//        return;
+//    }
     
     //调起微信支付
     PayReq* req   = [[PayReq alloc] init];
@@ -73,14 +67,14 @@ static WXPayManager *instance = nil;
     req.package   = [data objectForKey:@"package"];
     req.sign      = [data objectForKey:@"sign"];
     
-    if (req.partnerId == nil || req.prepayId == nil || req.nonceStr == nil || req.package == nil || req.sign == nil) {
-        
-        self.faild(@"参数错误", @"参数错误", nil);
-        return;
-    }
+//    if (req.partnerId == nil || req.prepayId == nil || req.nonceStr == nil || req.package == nil || req.sign == nil) {
+//
+//        self.faild(@"参数错误", @"参数错误", nil);
+//        return;
+//    }
     
     //日志输出
-    NSLog(@"appid=%@\npartid=%@\nprepayid=%@\nnoncestr=%@\ntimestamp=%ld\npackage=%@\nsign=%@",[data objectForKey:@"appid"],req.partnerId,req.prepayId,req.nonceStr,(long)req.timeStamp,req.package,req.sign );
+//    NSLog(@"appid=%@\npartid=%@\nprepayid=%@\nnoncestr=%@\ntimestamp=%ld\npackage=%@\nsign=%@",[data objectForKey:@"appid"],req.partnerId,req.prepayId,req.nonceStr,(long)req.timeStamp,req.package,req.sign );
     
     if([WXApi sendReq:req] == NO){
         self.faild(@"调起微信支付失败", @"调起微信支付失败", nil);
@@ -96,6 +90,10 @@ static WXPayManager *instance = nil;
         switch (resp.errCode) {
             case WXSuccess:
                 self.success(@"支付成功");
+                break;
+                
+            case WXErrCodeUserCancel:
+                self.faild(@"用户取消！", @"用户取消！", nil);
                 break;
                 
             default:
@@ -199,7 +197,7 @@ static WXPayManager *instance = nil;
     self.faild = faild;
     
     WXImageObject *imageObject = [WXImageObject object];
-    imageObject.imageData = [NSData dataWithContentsOfFile:@"imageFile"];
+    imageObject.imageData = [NSData dataWithContentsOfFile:[data objectForKey:@"imageFile"]];
     
     WXMediaMessage *message = [WXMediaMessage message];
     message.mediaObject = imageObject;
@@ -247,10 +245,14 @@ static WXPayManager *instance = nil;
     object.webpageUrl = [data objectForKey:@"webpageUrl"];
     object.userName = [data objectForKey:@"userName"];
     object.path = [data objectForKey:@"path"];
+    //    小程序新版本的预览图
     object.hdImageData = [self getUrlData:data[@"thumbImageUrl"]];
     object.withShareTicket = YES;
-    object.miniProgramType = WXMiniProgramTypeRelease;
-    
+//    正式版: WXMiniProgramTypeRelease;
+//    测试版: WXMiniProgramTypeTest;
+//    体验版: WXMiniProgramTypePreview;
+    object.miniProgramType = [[data objectForKey:@"miniProgramType"] integerValue];
+       
     WXMediaMessage *message = [WXMediaMessage message];
     message.title = [data objectForKey:@"title"];
     message.description = [data objectForKey:@"description"];
@@ -263,7 +265,7 @@ static WXPayManager *instance = nil;
     SendMessageToWXReq *req = [[SendMessageToWXReq alloc] init];
     req.bText = NO;
     req.message = message;
-    req.scene = [[data objectForKey:@"scene"] intValue]; //目前只支持会话
+    req.scene = WXSceneSession; //目前只支持会话
     [WXApi sendReq:req];
 }
 

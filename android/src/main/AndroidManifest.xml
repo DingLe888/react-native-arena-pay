@@ -9,15 +9,6 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
-    <application android:allowBackup="false" 
-                 android:supportsRtl="true">
-        <!-- 微信支付回调 -->
-        <activity
-            android:name="net.sourceforge.simcpux.wxapi.WXPayEntryActivity"
-            android:exported="true"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"
-            android:label="hahha"/>
-
-    </application>
+   
 </manifest>
   

@@ -30,8 +30,7 @@ QuartzCore.framework,CoreText.framework,CoreGraphics.framework,CoreMotion.framew
 5. 在你的工程文件中选择Build Setting，在"Other Linker Flags"中加入"-Objc" 和 "-all_load"
 	
 6. 在AppDelegate中添加跳转微信/支付宝的代理方法。
-
-
+ 
 ```
 
 //  应用间跳转的代理方法
@@ -57,6 +56,25 @@ QuartzCore.framework,CoreText.framework,CoreGraphics.framework,CoreMotion.framew
 
 
 ###### Android
+1、把source文件夹下的wxapi文件夹导入根包（两个回调Activity对象）
+2、在Manifest.xml文件中加入这两个Activity
+
+```
+  <activity android:name=".wxapi.WXEntryActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:exported="true"
+            android:taskAffinity="net.sourceforge.simcpux"
+            android:launchMode="singleTask"/>
+
+        <activity android:name=".wxapi.WXPayEntryActivity"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:exported="true"
+            android:taskAffinity="net.sourceforge.simcpux"
+            android:launchMode="singleTask"/>
+            
+```
 
 
 
@@ -102,10 +120,20 @@ import RNArenaPay from 'react-native-arena-pay';
     })
 
     // 微信支付
-    RNArenaPay.wechatPay({数据}).then((data)=>{
+      RNArenaPay.wechatPay({数据}).then((data)=>{
       console.log('支付成功')
     },(error)=>{
       console.log('支付失败' + error.code)
     })
+    
+    <!--微信登录-->
+    RNArenaPay.wechatLogin().then((data) => {
+
+            // Tips.showTips(JSON.stringify(data))
+        }, (error) => {
+            Tips.showTips(JSON.stringify(error))
+
+            // console.log('支付失败' + error.code)
+        })
 ```
   

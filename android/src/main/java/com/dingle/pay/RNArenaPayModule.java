@@ -105,13 +105,15 @@ public class RNArenaPayModule extends ReactContextBaseJavaModule {
 
   //  注册微信key
   @ReactMethod
-  public void wechatRegister(String appKey){
-    final IWXAPI wxApi = WXAPIFactory.createWXAPI(this.reactContext, null);
+  public void wechatRegister(final String appKey){
+
+    final IWXAPI wxApi = WXAPIFactory.createWXAPI(this.reactContext, appKey,true);
 
     // 将该app注册到微信
     wxApi.registerApp(appKey);
 
     this.wxApi = wxApi;
+
   }
 
 //  微信支付
@@ -184,7 +186,7 @@ public class RNArenaPayModule extends ReactContextBaseJavaModule {
   }
 
 
-  /*微信支付结果 回调*/
+  /*微信登录结果 回调*/
   public void wxLoginResuly(SendAuth.Resp resp){
 
     if (this.wxLoginPromise == null){
@@ -196,10 +198,10 @@ public class RNArenaPayModule extends ReactContextBaseJavaModule {
       WritableNativeMap map = new WritableNativeMap();
       map.putString("code",resp.code);
       map.putString("state",resp.state);
-      this.wxPayPromise.resolve(map);
+      this.wxLoginPromise.resolve(map);
     }else {
       String error = errCode == -2 ? "用户取消" : "用户拒绝";
-      this.wxPayPromise.reject(error,error);
+      this.wxLoginPromise.reject(error,error);
     }
   }
 
@@ -332,6 +334,10 @@ public class RNArenaPayModule extends ReactContextBaseJavaModule {
     miniProgramObj.webpageUrl = data.getString("webpageUrl"); // 兼容低版本的网页链接
     miniProgramObj.userName = data.getString("userName");     // 小程序原始id
     miniProgramObj.path = data.getString("path");            //小程序页面路径
+    //    public static final int MINIPTOGRAM_TYPE_RELEASE = 0;
+//    public static final int MINIPROGRAM_TYPE_TEST = 1;
+//    public static final int MINIPROGRAM_TYPE_PREVIEW = 2;
+    miniProgramObj.miniprogramType = data.getInt("miniProgramType");
     WXMediaMessage msg = new WXMediaMessage(miniProgramObj);
     msg.title = data.getString("title");                    // 小程序消息title
     msg.description = data.getString("description");               // 小程序消息desc
@@ -344,7 +350,7 @@ public class RNArenaPayModule extends ReactContextBaseJavaModule {
 
     SendMessageToWX.Req req = new SendMessageToWX.Req();
     req.message = msg;
-    req.scene = data.getInt("scene"); // 目前只支持会话
+    req.scene = WXSceneSession; // 目前只支持会话
     wxApi.sendReq(req);
   }
 

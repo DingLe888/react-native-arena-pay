@@ -1,4 +1,5 @@
-package net.sourceforge.simcpux.wxapi;
+package com.jsbm.wxapi;
+
 
 import com.dingle.pay.RNArenaPayModule;
 import com.tencent.mm.opensdk.constants.ConstantsAPI;
@@ -26,7 +27,7 @@ import static com.tencent.mm.opensdk.constants.ConstantsAPI.COMMAND_PAY_BY_WX;
 import static com.tencent.mm.opensdk.constants.ConstantsAPI.COMMAND_SENDAUTH;
 import static com.tencent.mm.opensdk.constants.ConstantsAPI.COMMAND_SENDMESSAGE_TO_WX;
 
-public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
+public class WXEntryActivity extends Activity implements IWXAPIEventHandler {
 	
 	private static final String TAG = "MicroMsg.SDKSample.WXPayEntryActivity";
 
@@ -36,19 +37,20 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//    	api = WXAPIFactory.createWXAPI(this, Constants.APP_ID);
-//        api.handleIntent(getIntent(), this);
+    	api = WXAPIFactory.createWXAPI(this, "wx4d35e3393fc4f1a0",false);
+        api.handleIntent(getIntent(), this);
     }
 
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 		setIntent(intent);
-//        api.handleIntent(intent, this);
+        api.handleIntent(intent, this);
 	}
 
 	@Override
 	public void onReq(BaseReq req) {
+    	System.out.println("");
 	}
 
 	@Override
@@ -67,8 +69,10 @@ public class WXPayEntryActivity extends Activity implements IWXAPIEventHandler {
 		}if(resp.getType()==COMMAND_SENDMESSAGE_TO_WX){
 			//			分享
 			RNArenaPayModule.module.wxPayResuly(resp);
-
 		}
+
+//		智障，不能自己销毁，还要老子来手动销毁
+		finish();
 
 	}
 }
