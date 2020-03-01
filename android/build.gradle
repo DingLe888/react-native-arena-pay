@@ -42,5 +42,8 @@ dependencies {
     api files('libs/alipaySdk-20170922.jar')
 
     api 'com.tencent.mm.opensdk:wechat-sdk-android-with-mta:+'
+
+    api fileTree(dir: 'libs', include: '*.jar')
+
 }
   

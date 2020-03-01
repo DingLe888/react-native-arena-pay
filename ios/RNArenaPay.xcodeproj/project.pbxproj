@@ -13,6 +13,7 @@
 		8D13CBA021F032FB00DD795A /* AppPayManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8D13CB5921ED88EF00DD795A /* AppPayManager.h */; };
 		8D13CBDA21F0833C00DD795A /* WXPayManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8D13CBD921F0833C00DD795A /* WXPayManager.m */; };
 		8D13CBE521F0868600DD795A /* WXPayManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 8D13CBD821F0833C00DD795A /* WXPayManager.h */; };
+		8DA04965240C090900B88373 /* RNArenaPay.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = B3E7B5881CC2AC0600A0062D /* RNArenaPay.h */; };
 		B3E7B58A1CC2AC0600A0062D /* RNArenaPay.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNArenaPay.m */; };
 /* End PBXBuildFile section */
 
@@ -23,6 +24,7 @@
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
+				8DA04965240C090900B88373 /* RNArenaPay.h in CopyFiles */,
 				8D13CBE521F0868600DD795A /* WXPayManager.h in CopyFiles */,
 				8D13CB9F21F032FB00DD795A /* AliPayManager.h in CopyFiles */,
 				8D13CBA021F032FB00DD795A /* AppPayManager.h in CopyFiles */,
@@ -116,6 +118,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 58B511D21A9E6C8500147676;

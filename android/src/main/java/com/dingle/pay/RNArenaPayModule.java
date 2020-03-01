@@ -26,6 +26,11 @@ import com.tencent.mm.opensdk.modelmsg.WXWebpageObject;
 import com.tencent.mm.opensdk.modelpay.PayReq;
 import com.tencent.mm.opensdk.openapi.IWXAPI;
 import com.tencent.mm.opensdk.openapi.WXAPIFactory;
+import com.tencent.tauth.IUiListener;
+import com.tencent.tauth.Tencent;
+import com.tencent.tauth.UiError;
+
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -38,8 +43,9 @@ import java.util.Map;
 
 import static com.tencent.mm.opensdk.modelbase.BaseResp.ErrCode.ERR_AUTH_DENIED;
 import static com.tencent.mm.opensdk.modelbase.BaseResp.ErrCode.ERR_OK;
+import static com.tencent.mm.opensdk.modelmsg.SendMessageToWX.Req.WXSceneSession;
 
-public class RNArenaPayModule extends ReactContextBaseJavaModule {
+public class RNArenaPayModule extends ReactContextBaseJavaModule implements IUiListener {
 
   private final ReactApplicationContext reactContext;
 
@@ -51,7 +57,14 @@ public class RNArenaPayModule extends ReactContextBaseJavaModule {
 
   private Promise wxLoginPromise;
 
+  //  QQ 登录回调
+  private Promise QQLoginPromise;
+
+
   private IWXAPI wxApi;
+
+  //  QQ 实例
+  private Tencent mTencent;
 
   public RNArenaPayModule(ReactApplicationContext reactContext) {
     super(reactContext);
@@ -65,7 +78,7 @@ public class RNArenaPayModule extends ReactContextBaseJavaModule {
   }
 
 
-//  支付宝支付
+  //  支付宝支付
   @ReactMethod
   public void aliPay(final ReadableMap data,final Promise promise){
 
@@ -116,7 +129,61 @@ public class RNArenaPayModule extends ReactContextBaseJavaModule {
 
   }
 
-//  微信支付
+  //  QQ注册 appId
+  @ReactMethod
+  public void QQRegister(final String appId){
+    mTencent = Tencent.createInstance(appId, reactContext);
+
+
+  }
+
+
+  //  QQ登录
+  @ReactMethod
+  public void QQLogin(Promise promise){
+
+    this.QQLoginPromise = promise;
+    Activity activity = getCurrentActivity();
+
+    mTencent.login(activity,"all",this);
+  }
+
+  //  ======  QQ 回调方法 ==========
+  @Override
+  public void onComplete(Object o) {
+    if(this.QQLoginPromise != null ){
+
+      try{
+
+        JSONObject resp = (JSONObject)o;
+        WritableNativeMap map = new WritableNativeMap();
+        map.putString("accessToken",resp.getString("access_token"));
+        map.putString("openId",resp.getString("openid"));
+        map.putString("expiresTime",resp.getLong("expires_time") + "");
+
+        this.QQLoginPromise.resolve(map);
+      }catch (Exception err){
+        this.QQLoginPromise.reject("数据解释失败","数据解释失败");
+      }
+
+    }
+  }
+
+  @Override
+  public void onError(UiError uiError) {
+    this.QQLoginPromise.reject("QQ登录失败","QQ登录失败");
+
+  }
+
+  @Override
+  public void onCancel() {
+    this.QQLoginPromise.reject("用户取消登录","用户取消登录");
+
+  }
+
+
+
+  //  微信支付
   @ReactMethod
   public void wechatPay(ReadableMap data, Promise promise){
     if(wxApi == null){
@@ -161,7 +228,7 @@ public class RNArenaPayModule extends ReactContextBaseJavaModule {
     }
   }
 
-//  微信登录
+  //  微信登录
   @ReactMethod
   public void wechatLogin(Promise promise){
 
@@ -403,10 +470,10 @@ public class RNArenaPayModule extends ReactContextBaseJavaModule {
     return bitmap;
   }
 
-/*
-* url 转 byte
-*
-* */
+  /*
+   * url 转 byte
+   *
+   * */
   public static byte[] loadRawDataFromURL(String u) throws Exception {
     URL url = new URL(u);
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -438,5 +505,7 @@ public class RNArenaPayModule extends ReactContextBaseJavaModule {
 
     return data;
   }
+
+
 
 }

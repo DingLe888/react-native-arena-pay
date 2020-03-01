@@ -35,6 +35,31 @@ RCT_EXPORT_METHOD(wechatRegister:(NSString *)appKey)
 }
 
 
+/**
+ QQ注册 appId
+ 
+ @param NSString appId
+ */
+RCT_EXPORT_METHOD(QQRegister:(NSString *)appId)
+{
+    [[QQAuthManager shareInstance] setQQAppId:appId];
+}
+
+
+
+/**
+ QQ登录
+ 
+ @success 成功的回调
+ @faild 失败的回调
+ */
+RCT_EXPORT_METHOD(QQLogin:(RCTPromiseResolveBlock)success faild:(RCTPromiseRejectBlock)faild)
+{
+    [[QQAuthManager shareInstance] QQLogin:success faild:faild];
+}
+
+
+
 
 /**
  微信支付

@@ -8,6 +8,7 @@
 #import "AppPayManager.h"
 #import "AliPayManager.h"
 #import "WXPayManager.h"
+#import "QQAuthManager.h"
 
 @interface RNArenaPay : NSObject <RCTBridgeModule>
 
